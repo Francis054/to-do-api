@@ -4,7 +4,11 @@ import express, {
   type Application,
 } from "express";
 const app: Application = express();
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./openapi.json" with { type: "json" };
 app.use(express.json());
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 type Task = {
   id: number;
@@ -53,6 +57,7 @@ app.get("/tasks", (req: Request, res: Response): void => {
 app.get("/tasks/:id", (req: Request, res: Response) => {
   const id: number = Number(req.params.id);
   const task = tasks.find((task) => task.id === id);
+
   if (!task) {
     res.status(404).json({
       error: `Task ${id} not found`,
@@ -61,6 +66,7 @@ app.get("/tasks/:id", (req: Request, res: Response) => {
   }
   res.status(200).json(task);
 });
+
 app.post("/tasks", (req: Request, res: Response) => {
   const title: string = req.body.title;
 
@@ -68,6 +74,7 @@ app.post("/tasks", (req: Request, res: Response) => {
     res.status(400).json("title is empty");
     return;
   }
+
   const newTask: Task = {
     id: tasks.length + 1,
     title,
