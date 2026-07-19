@@ -66,6 +66,25 @@ app.get("/tasks/:id", (req: Request, res: Response) => {
   res.status(200).json(task);
 });
 
+app.post("/tasks", (req: Request, res: Response) => {
+  const title: string = req.body.title;
+
+  if (title == "") {
+    res.status(400).json("title is empty");
+    return
+  }
+
+  const newTask: Task = {
+    id: tasks.length + 1,
+    title,
+    done: false,
+  };
+
+  tasks.push(newTask);
+
+  res.status(201).json(newTask);
+});
+
 const PORT: number = 3000;
 
 app.listen(PORT, (): void => {
