@@ -3,9 +3,7 @@ import express, {
   type Response,
   type Application,
 } from "express";
-
 const app: Application = express();
-
 app.use(express.json());
 
 type Task = {
@@ -54,9 +52,7 @@ app.get("/tasks", (req: Request, res: Response): void => {
 
 app.get("/tasks/:id", (req: Request, res: Response) => {
   const id: number = Number(req.params.id);
-
   const task = tasks.find((task) => task.id === id);
-
   if (!task) {
     res.status(404).json({
       error: `Task ${id} not found`,
@@ -65,24 +61,61 @@ app.get("/tasks/:id", (req: Request, res: Response) => {
   }
   res.status(200).json(task);
 });
-
 app.post("/tasks", (req: Request, res: Response) => {
   const title: string = req.body.title;
 
   if (title == "") {
     res.status(400).json("title is empty");
-    return
+    return;
   }
-
   const newTask: Task = {
     id: tasks.length + 1,
     title,
     done: false,
   };
-
   tasks.push(newTask);
-
   res.status(201).json(newTask);
+});
+
+app.put("/tasks/:id", (req: Request, res: Response): void => {
+  const id = Number(req.params.id);
+  if (
+    typeof req.body.title !== "string" ||
+    req.body.title.trim() === "" ||
+    typeof req.body.done !== "boolean"
+  ) {
+    res.status(400).json({
+      error: "Title must be a non-empty string and done must be a boolean.",
+    });
+    return;
+  }
+  const task = tasks.find((task) => task.id === id);
+
+  if (!task) {
+    res.status(404).json({
+      error: `Task ${id} not found`,
+    });
+    return;
+  }
+  task.title = req.body.title;
+  task.done = req.body.done;
+  res.status(200).json(task);
+});
+
+app.delete("/tasks/:id", (req: Request, res: Response): void => {
+  const id = Number(req.params.id);
+  const index = tasks.findIndex((task) => task.id === id);
+
+  if (index === -1) {
+    res.status(404).json({
+      error: `Task ${id} not found`,
+    });
+    return;
+  }
+  const deletedTask = tasks.splice(index, 1)[0];
+  res.status(200).json({
+    message: "Task deleted successfully",
+  });
 });
 
 const PORT: number = 3000;
