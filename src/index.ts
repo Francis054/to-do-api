@@ -5,7 +5,7 @@ import express, {
 } from "express";
 const app: Application = express();
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./openapi.json" with { type: "json" };
+import swaggerDocument from "../openapi.json" with { type: "json" };
 app.use(express.json());
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
